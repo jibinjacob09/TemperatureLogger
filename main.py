@@ -2,7 +2,7 @@ from time import sleep
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 from lib import get_temp_from_sensor, SENSOR
-from db_schema import InfluxMeasurement
+from influx_measurement import InfluxMeasurement
 
 TEMP_SENSORS = [SENSOR("item_name", "sensor_id", "sensor_name")]
 
