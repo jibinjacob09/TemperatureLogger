@@ -11,11 +11,11 @@ SENSOR = namedtuple("SENSOR", "item name id")
 def _read_data_from_sensor_file(sensor_name):
     """Reads all data from the sensor's log file."""
 
-    f_location = "/w1_bus_master1/" + sensor_name + "/"
-    f = open(f_location + "w1_slave", "r")
-    f_data = f.readlines()
-    f.close()
-    return f_data
+    file_location = "/w1_bus_master1/" + sensor_name + "/"
+    _file = open(file_location + "w1_slave", "r")
+    file_data = _file.readlines()
+    _file.close()
+    return file_data
 
 
 def get_temp_from_sensor(sensor_name):
