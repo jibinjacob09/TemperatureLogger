@@ -1,10 +1,13 @@
-"""Schema of the influxdb instanced used by Firefly project"""
+"""The measurement point data needs to be in the following JSON format, and the class below will act as a factory to
+generate the points which can then be written to InfluxDB.
+"""
 
 
-class DBSchema:
-    """A new measurement point is created using the schema per class instnace"""
+class InfluxMeasurement:
+    """A new measurement point is created using the schema for each class instance"""
+
     def __init__(self, measurement_val, tag_val, field_val=0):
-        """Schema for the db
+        """Schema for the db, which should be modified to match the usecase
 
         :param measurement_val: The name of the item being measured; example "Resorvoir", "tube"
         :param tag_val: name of the sensor

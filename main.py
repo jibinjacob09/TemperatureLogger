@@ -2,7 +2,7 @@ from time import sleep
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 from lib import get_temp_from_sensor, SENSOR
-from db_schema import DBSchema
+from db_schema import InfluxMeasurement
 
 TEMP_SENSORS = [SENSOR("item_name", "sensor_id", "sensor_name")]
 
@@ -33,7 +33,7 @@ def generate_a_measurement_point(item_name, sensor_id, sensor_name=None):
     :return: An InfluxDB style measurement point
     """
     temp = get_temp_from_sensor(sensor_id)
-    point = DBSchema(measurement_val=item_name, tag_val=sensor_name, field_val=temp).measurement_point
+    point = InfluxMeasurement(measurement_val=item_name, tag_val=sensor_name, field_val=temp).measurement_point
     return point
 
 
