@@ -1,10 +1,8 @@
 from time import sleep
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
-from lib import get_temp_from_sensor, SENSOR
+from lib import get_temp_from_sensor, get_active_sensor_information
 from influx_measurement import InfluxMeasurement
-
-TEMP_SENSORS = [SENSOR("item_name", "sensor_id", "sensor_name")]
 
 
 def setup_db_for_use(host="localhost", port=8086, db_name='firefly', retention_duration='1h'):
@@ -64,6 +62,7 @@ def main(client, temp_sensors):
 
 if __name__ == "__main__":
     CLIENT = setup_db_for_use()
+    temp_sensors = get_active_sensor_information("sensors_info")
     for i in range(60):
-        main(CLIENT, TEMP_SENSORS)
+        main(CLIENT, temp_sensors)
         sleep(1)

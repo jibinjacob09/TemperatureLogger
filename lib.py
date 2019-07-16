@@ -5,10 +5,8 @@ A library of helper methods used by main.py
 import re
 from collections import namedtuple
 
-SENSOR = namedtuple("SENSOR", "item name id")
 
-
-def _read_data_from_sensor_file(full_file_path):
+def _read_data_from_file(full_file_path):
     """Reads all data from the sensor's log file, originally designed for sensors in rasp Pi
 
     :param full_file_path: the path to the sensor output file
@@ -29,7 +27,7 @@ def get_temp_from_sensor(sensor_id=None, output_file_dir=None, output_filename="
     """
 
     file_location = output_file_dir if output_file_dir is not None else f"/w1_bus_master1/{sensor_id}/"
-    file_data = _read_data_from_sensor_file(full_file_path=f"{file_location}{output_filename}")
+    file_data = _read_data_from_file(full_file_path=f"{file_location}{output_filename}")
 
     try:
         temp_data = re.search('t=[0-9]+', file_data)[0]
@@ -38,3 +36,25 @@ def get_temp_from_sensor(sensor_id=None, output_file_dir=None, output_filename="
         celcius = -1  # temp data could not be read from the output file
 
     return celcius
+
+
+def get_active_sensor_information(sensor_file_path):
+    """Parse the info from sensors_file, and then create a data object for each sensor.
+
+    :param sensor_file_path: file path to sensors_info file
+    :return a named tuple with item, id, name as fields
+    """
+    sensor = namedtuple("sensor", "item id name")
+    lst_sensors = []
+
+    f_lines = _read_data_from_file(sensor_file_path).split("\n")
+    if len(f_lines) <= 1:
+        raise ValueError("A valid sensor_info file is missing. Please populate one by following the example")
+
+    for data_line in f_lines[1:]:
+        try:
+            lst_sensors.append(sensor._make(data_line.split(",")))
+        except TypeError:
+            raise ValueError("A valid sensor_info file is missing. Please populate one by following the example")
+
+    return lst_sensors

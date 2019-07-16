@@ -1,0 +1,3 @@
+measurement_item, sensor_id, sensor_name,
+WaterTank, 1-abcdefg
+WaterTank, 1-abcdefg, SensorA, someother_info

@@ -10,7 +10,7 @@ Graphana.
 This repo contains the code that I used to read data from the sensors, and write to my instance of InfluxDB.
 
 
-## How everything should work
+## How everything should work in big picture
 
 There are 3 main software components to this system (listed below), and each of them will be run in its own
  docker container
@@ -19,6 +19,10 @@ There are 3 main software components to this system (listed below), and each of 
 1. InfluxDB, [more info](https://docs.docker.com/samples/library/influxdb/)
 1. For this python code
 
+
+## How to run this code
+
+1. create a `sensors_info` file by following the `sensors_info.example` file with all sensors info.
 
 
 ### Notes:
