@@ -5,7 +5,8 @@ from lib import get_temp_from_sensor, get_active_sensor_information
 from influx_measurement import InfluxMeasurement
 
 
-def setup_db_for_use(host="localhost", port=8086, db_name='firefly', retention_duration='1h'):
+def setup_db_for_use(host="localhost", port=8086, db_name='firefly', retention_duration='1h',
+                     retention_policy_name="default_firefly_retention"):
     """
     Sets up an instance of InfluxDB to store data to.
 
@@ -13,24 +14,33 @@ def setup_db_for_use(host="localhost", port=8086, db_name='firefly', retention_d
     :param port: the port by which the db can be accessed
     :param db_name: name of the databse to use inside InfluxDB
     :param retention_duration: specifies how long to retain the stored information
+    :param retention_policy_name: name of the retention policy that is to be created
     :return: an active InfluxDB client
     """
     client = InfluxDBClient(host, port)
+
+    if {"name": db_name} not in client.get_list_database():
+        client.create_database(db_name)
+
     client.switch_database(db_name)
-    client.create_retention_policy('default_firefly_retention', retention_duration, 1, default=True)
+    client.create_retention_policy(retention_policy_name, retention_duration, 1, default=True)
     return client
 
 
-def generate_a_measurement_point(item_name, sensor_id, sensor_name=None):
+def generate_a_measurement_point(item_name, sensor_name=None, sensor_id=None, sensor_output_file_dir=None,
+                                 output_filename="w1_slave"):
     """
     Generates an InfluxDB style measurement point based on the data provided.
 
     :param item_name: The name of the item the measurement belongs to. i.e. Water Tank, radiator
     :param sensor_id: The unique identifier of the sensor, under which the temp reading output can be found
     :param sensor_name: Name of the sensor
+    :param sensor_output_file_dir: directory location of the sensor's output file, with trailing '/'
+    :param output_filename: name of the sensor's output file
     :return: An InfluxDB style measurement point
     """
-    temp = get_temp_from_sensor(sensor_id)
+    temp = get_temp_from_sensor(sensor_id=sensor_id, output_file_dir=sensor_output_file_dir,
+                                output_filename=output_filename)
     point = InfluxMeasurement(measurement_val=item_name, tag_val=sensor_name, field_val=temp).measurement_point
     return point
 
@@ -43,7 +53,7 @@ def write_data_to_db(client, points_information):
     :param points_information: All measurement points that are to be written; List
     """
     try:
-        client.write_points([points_information])
+        client.write_points(points_information)
     except InfluxDBClientError:
         raise InfluxDBClientError(f"error for data entry :: {points_information}")
 
