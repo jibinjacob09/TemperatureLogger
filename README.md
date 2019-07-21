@@ -41,7 +41,7 @@ Note: I didnt use a docker-compose.yaml, since it proved to unreliable on a PI
     i. set `$sensors_data` with the location of the folder that contains all sensors output data.  
     In Raspberry Pi it is  `/sys/devices/w1_bus_master1/`
     
-    ```docker run -d -v ${sensors_data}:/w1_bus_master1 --restart=always templogger_python```
+    ```docker run -d -v $sensors_data:/w1_bus_master1 --restart=always templogger_python```
 
 1. Go to `localhost:3000` (or whichever port you used for Grafana) to login and create your dashboard
 
@@ -49,6 +49,6 @@ Note: I didnt use a docker-compose.yaml, since it proved to unreliable on a PI
 
 All tests are located in `tests/` directory, and will need pytest to run
 
-``` pytest test/```  
+test execution command : ``` pytest test/```  
 
 note:  test_main will require a running influxdb container. Update the ip and port as needed
