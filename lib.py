@@ -49,12 +49,15 @@ def get_active_sensor_information(sensor_file_path):
 
     f_lines = _read_data_from_file(sensor_file_path).split("\n")
     if len(f_lines) <= 1:
-        raise ValueError("A valid sensor_info file is missing. Please populate one by following the example")
+        raise ValueError("A valid sensor_info file with information is missing. "
+                         "Please populate one by following the example")
 
     for data_line in f_lines[1:]:
-        try:
-            lst_sensors.append(sensor._make(data_line.split(",")))
-        except TypeError:
-            raise ValueError("A valid sensor_info file is missing. Please populate one by following the example")
+        if data_line != "":
+            try:
+                lst_sensors.append(sensor._make(data_line.split(",")))
+            except TypeError:
+                raise ValueError("Sensor file doesnt have correctly formated information. "
+                                 "Please populate one by following the example")
 
     return lst_sensors

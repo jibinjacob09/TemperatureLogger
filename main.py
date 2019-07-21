@@ -52,6 +52,7 @@ def write_data_to_db(client, points_information):
     :param client: An active instance of InfluxDB
     :param points_information: All measurement points that are to be written; List
     """
+    print(points_information)
     try:
         client.write_points(points_information)
     except InfluxDBClientError:
@@ -67,12 +68,12 @@ def main(client, temp_sensors):
     """
     for sensor in temp_sensors:
         point = generate_a_measurement_point(sensor.item, sensor.name, sensor.id)
-        write_data_to_db(client, point)
+        write_data_to_db(client, [point])
 
 
 if __name__ == "__main__":
     CLIENT = setup_db_for_use()
     temp_sensors = get_active_sensor_information("sensors_info")
-    for i in range(60):
+    while True:
         main(CLIENT, temp_sensors)
         sleep(1)

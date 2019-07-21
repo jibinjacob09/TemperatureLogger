@@ -5,7 +5,8 @@ import main
 class TestMain:
     """ Influxdb docker container must be running for these tests """
 
-    test_client = main.setup_db_for_use(db_name="testDB", retention_policy_name="testRetention")
+    test_client = main.setup_db_for_use(host="localhost", port=8086, db_name="testDB",
+                                        retention_policy_name="testRetention")
     expected_temp_val = 29.191  # taken from sensor_out_valid.txt
 
     def test_setup_db_for_use_retruns_right_client(self):
