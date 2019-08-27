@@ -44,7 +44,7 @@ Influxdb's ip address and port number as build args
     In Raspberry Pi it is  `/sys/devices/w1_bus_master1/`, we will be attaching this folder as a volume so the
 container has access to all the sensors information
 
-    1. attach the folder with the python files as a volume (assuming its $PWD in the command below),
+    1. attach the folder with the python files as a volume (assuming it is $PWD in the command below),
     this will allow for easy debugging since you can change the code without having to rebuild the image
     
     ```docker run -d -v $PWD:/firefly/ -v $sensors_data:/w1_bus_master1 --restart=always templogger_python```
