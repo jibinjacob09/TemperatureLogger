@@ -42,6 +42,7 @@ Influxdb's ip address and port number as build args
 
     i. set `$sensors_data` with the location of the folder that contains all sensors output data.  
     In Raspberry Pi it is  `/sys/devices/w1_bus_master1/`, we will be attaching this file as a volume
+
     i. attach the folder with the python files as a volume (assuming its $PWD for the command below),
     this will allow for easy debugging since you can change the code without having to rebuild the image
     
