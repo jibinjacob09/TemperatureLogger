@@ -30,18 +30,22 @@ Note: I didnt use a docker-compose.yaml, since it proved to unreliable on a PI
 1. Run the Grafana container
 
     ```docker run -d -p 3000:3000 --restart=always grafana/grafana```
-1. Build the python code's image using dockerfile
-    
-    i. Replace the `localhost` reference in main.py (and test_main.py) with the actual ip of your device
-    
-    ```docker build . -t  templogger_python```
+1. Build the python image using the dockerfile. Be sure to specify the
+Influxdb's ip address and port number as build args
 
-1. Run the templogger_python image as a container .
+    ```docker build --build-arg DBHOST={influxIP} --build-arg DBPORT={influxPORT} -t templogger_python .```
+    
+    Note: if you want to run main.py outside the container, make sure to set the enviornment variable 
+    `DBHOST` with the ip of the database and `DBPORT` with the port of the database
+
+1. Run the templogger_python image as a container.
 
     i. set `$sensors_data` with the location of the folder that contains all sensors output data.  
-    In Raspberry Pi it is  `/sys/devices/w1_bus_master1/`
+    In Raspberry Pi it is  `/sys/devices/w1_bus_master1/`, we will be attaching this file as a volume
+    i. attach the folder with the python files as a volume (assuming its $PWD for the command below),
+    this will allow for easy debugging since you can change the code without having to rebuild the image
     
-    ```docker run -d -v $sensors_data:/w1_bus_master1 --restart=always templogger_python```
+    ```docker run -d -v $PWD:/firefly/ -v $sensors_data:/w1_bus_master1 --restart=always templogger_python```
 
 1. Go to `localhost:3000` (or whichever port you used for Grafana) to login and create your dashboard
 
@@ -51,4 +55,4 @@ All tests are located in `tests/` directory, and will need pytest to run
 
 test execution command : ``` pytest test/```  
 
-note:  test_main will require a running influxdb container. Update the ip and port as needed
+note:  test_main will require a running influxdb container. Set the IP and PORT using the env vars DBHOST and DBPORT

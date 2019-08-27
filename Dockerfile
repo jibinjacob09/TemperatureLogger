@@ -5,10 +5,15 @@ LABEL version="1.0.0"
 # Setting up enviornment
 WORKDIR /firefly/
 ENV PATH="/firefly/:${PATH}"
+ARG DBHOST
+ARG DBPORT
+ENV DBHOST=$DBHOST
+ENV DBPORT=$DBPORT
+
 RUN apt update
 
 # Installing Project
-COPY . .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # executing Project when container starts

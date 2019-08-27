@@ -1,3 +1,4 @@
+from os import getenv
 from time import sleep
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
@@ -5,7 +6,7 @@ from lib import get_temp_from_sensor, get_active_sensor_information
 from influx_measurement import InfluxMeasurement
 
 
-def setup_db_for_use(host="localhost", port=8086, db_name='firefly', retention_duration='1h',
+def setup_db_for_use(host, port, db_name='firefly', retention_duration='1h',
                      retention_policy_name="default_firefly_retention"):
     """
     Sets up an instance of InfluxDB to store data to.
@@ -72,8 +73,10 @@ def main(client, temp_sensors):
 
 
 if __name__ == "__main__":
-    CLIENT = setup_db_for_use()
-    temp_sensors = get_active_sensor_information("sensors_info")
+    SENSORS_INFO_FILE_NAME = "sensors_info"
+    HOST, PORT = [getenv("DBHOST", "localhost"), getenv("DBPORT", "8086")]
+    CLIENT = setup_db_for_use(HOST, PORT)
+    TEMP_SENSORS = get_active_sensor_information(SENSORS_INFO_FILE_NAME)
     while True:
-        main(CLIENT, temp_sensors)
+        main(CLIENT, TEMP_SENSORS)
         sleep(1)

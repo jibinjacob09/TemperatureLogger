@@ -1,11 +1,12 @@
+from os import getenv
 from influxdb import InfluxDBClient
 import main
 
 
 class TestMain:
     """ Influxdb docker container must be running for these tests """
-
-    test_client = main.setup_db_for_use(host="localhost", port=8086, db_name="testDB",
+    target, portnum = [getenv("DBHOST", "localhost"), getenv("DBPORT", "8086")]
+    test_client = main.setup_db_for_use(host=target, port=portnum, db_name="testDB",
                                         retention_policy_name="testRetention")
     expected_temp_val = 29.191  # taken from sensor_out_valid.txt
 
