@@ -6,7 +6,9 @@ import main
 class TestMain:
     """ Influxdb docker container must be running for these tests """
     target, portnum = [getenv("DBHOST", "localhost"), getenv("DBPORT", "8086")]
-    test_client = main.setup_db_for_use(host=target, port=portnum, db_name="testDB",
+    test_client = main.setup_db_for_use(host=target,
+                                        port=portnum,
+                                        db_name="testDB",
                                         retention_policy_name="testRetention")
     expected_temp_val = 29.191  # taken from sensor_out_valid.txt
 
@@ -25,16 +27,19 @@ class TestMain:
             'replicaN': 1,
             'default': True
         }
-        assert expected_retention in self.test_client.get_list_retention_policies()
+        assert expected_retention in self.test_client.get_list_retention_policies(
+        )
 
     def test_generate_a_measurement_point(self):
         """A measurement point can be created with the data specified"""
 
         item_name, sensor_name = ["itemA", "sensorA"]
 
-        result = main.generate_a_measurement_point(item_name, sensor_name=sensor_name,
-                                                   sensor_output_file_dir="tests/datafiles/",
-                                                   output_filename="sensor_out_valid.txt")
+        result = main.generate_a_measurement_point(
+            item_name,
+            sensor_name=sensor_name,
+            sensor_output_file_dir="tests/datafiles/",
+            output_filename="sensor_out_valid.txt")
         assert result["measurement"] == item_name
         assert result["tags"]["sensor"] == sensor_name
         assert result["fields"]["temp"] == self.expected_temp_val
@@ -49,13 +54,16 @@ class TestMain:
             """Get measurement points from db given a query"""
 
             try:
-                return self.test_client.query(_query).raw["series"][0]["values"]
+                return self.test_client.query(
+                    _query).raw["series"][0]["values"]
             except KeyError:
                 return []
 
-        test_point = main.generate_a_measurement_point(measurement, sensor_name=sensor_name,
-                                                       sensor_output_file_dir="tests/datafiles/",
-                                                       output_filename="sensor_out_valid.txt")
+        test_point = main.generate_a_measurement_point(
+            measurement,
+            sensor_name=sensor_name,
+            sensor_output_file_dir="tests/datafiles/",
+            output_filename="sensor_out_valid.txt")
 
         original_points_in_db = get_points(query)
         main.write_data_to_db(self.test_client, [test_point])
