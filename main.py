@@ -1,12 +1,16 @@
 from os import getenv
 from time import sleep
+
+from influx_measurement import InfluxMeasurement
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
-from lib import get_temp_from_sensor, get_active_sensor_information
-from influx_measurement import InfluxMeasurement
+from lib import get_active_sensor_information, get_temp_from_sensor
 
 
-def setup_db_for_use(host, port, db_name='firefly', retention_duration='1h',
+def setup_db_for_use(host,
+                     port,
+                     db_name='firefly',
+                     retention_duration='1h',
                      retention_policy_name="default_firefly_retention"):
     """
     Sets up an instance of InfluxDB to store data to.
@@ -24,11 +28,17 @@ def setup_db_for_use(host, port, db_name='firefly', retention_duration='1h',
         client.create_database(db_name)
 
     client.switch_database(db_name)
-    client.create_retention_policy(retention_policy_name, retention_duration, 1, default=True)
+    client.create_retention_policy(retention_policy_name,
+                                   retention_duration,
+                                   1,
+                                   default=True)
     return client
 
 
-def generate_a_measurement_point(item_name, sensor_name=None, sensor_id=None, sensor_output_file_dir=None,
+def generate_a_measurement_point(item_name,
+                                 sensor_name=None,
+                                 sensor_id=None,
+                                 sensor_output_file_dir=None,
                                  output_filename="w1_slave"):
     """
     Generates an InfluxDB style measurement point based on the data provided.
@@ -40,9 +50,12 @@ def generate_a_measurement_point(item_name, sensor_name=None, sensor_id=None, se
     :param output_filename: name of the sensor's output file
     :return: An InfluxDB style measurement point
     """
-    temp = get_temp_from_sensor(sensor_id=sensor_id, output_file_dir=sensor_output_file_dir,
+    temp = get_temp_from_sensor(sensor_id=sensor_id,
+                                output_file_dir=sensor_output_file_dir,
                                 output_filename=output_filename)
-    point = InfluxMeasurement(measurement_val=item_name, tag_val=sensor_name, field_val=temp).measurement_point
+    point = InfluxMeasurement(measurement_val=item_name,
+                              tag_val=sensor_name,
+                              field_val=temp).measurement_point
     return point
 
 
@@ -57,7 +70,8 @@ def write_data_to_db(client, points_information):
     try:
         client.write_points(points_information)
     except InfluxDBClientError:
-        raise InfluxDBClientError(f"error for data entry :: {points_information}")
+        raise InfluxDBClientError(
+            f"error for data entry :: {points_information}")
 
 
 def main(client, temp_sensors):
@@ -68,7 +82,8 @@ def main(client, temp_sensors):
     :param temp_sensors: All the sensors that should be read; List
     """
     for sensor in temp_sensors:
-        point = generate_a_measurement_point(sensor.item, sensor.name, sensor.id)
+        point = generate_a_measurement_point(sensor.item, sensor.name,
+                                             sensor.id)
         write_data_to_db(client, [point])
 
 
