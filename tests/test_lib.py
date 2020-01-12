@@ -31,9 +31,9 @@ class TestLib:
 
         non_existant_test_file = "non_existant_test_file"
         expected_temp_val = -1
-        actual_val = lib.get_temp_from_sensor(output_file_dir=TEST_FILE_DIR,
-                                              output_filename=non_existant_test_file
-                                              )
+        actual_val = lib.get_temp_from_sensor(
+            output_file_dir=TEST_FILE_DIR,
+            output_filename=non_existant_test_file)
         assert actual_val == expected_temp_val
 
     @staticmethod
