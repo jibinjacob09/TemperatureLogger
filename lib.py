@@ -18,7 +18,9 @@ def _read_data_from_file(full_file_path):
     return file_data
 
 
-def get_temp_from_sensor(sensor_id=None, output_file_dir=None, output_filename="w1_slave"):
+def get_temp_from_sensor(sensor_id=None,
+                         output_file_dir=None,
+                         output_filename="w1_slave"):
     """Gets the tempearture data from sensor, designed for DS18B20.
 
     :param sensor_id: unique id of the sensor, used to locate its output file if output_file_dir is not provided
@@ -27,12 +29,12 @@ def get_temp_from_sensor(sensor_id=None, output_file_dir=None, output_filename="
     """
 
     file_location = output_file_dir if output_file_dir is not None else f"/w1_bus_master1/{sensor_id}/"
-    file_data = _read_data_from_file(full_file_path=f"{file_location}{output_filename}")
-
     try:
+        file_data = _read_data_from_file(
+            full_file_path=f"{file_location}{output_filename}")
         temp_data = re.search('t=[0-9]+', file_data)[0]
         celcius = float(temp_data[2:]) / 1000
-    except TypeError:
+    except (TypeError, FileNotFoundError):
         celcius = -1  # temp data could not be read from the output file
 
     return celcius
@@ -49,15 +51,17 @@ def get_active_sensor_information(sensor_file_path):
 
     f_lines = _read_data_from_file(sensor_file_path).split("\n")
     if len(f_lines) <= 1:
-        raise ValueError("A valid sensor_info file with information is missing. "
-                         "Please populate one by following the example")
+        raise ValueError(
+            "A valid sensor_info file with information is missing. "
+            "Please populate one by following the example")
 
     for data_line in f_lines[1:]:
         if data_line != "":
             try:
                 lst_sensors.append(sensor._make(data_line.split(",")))
             except TypeError:
-                raise ValueError("Sensor file doesnt have correctly formated information. "
-                                 "Please populate one by following the example")
+                raise ValueError(
+                    "Sensor file doesnt have correctly formated information. "
+                    "Please populate one by following the example")
 
     return lst_sensors
